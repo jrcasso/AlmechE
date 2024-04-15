@@ -1,10 +1,9 @@
 import logging
-import cad_prompts
-import speech_to_text
-import yaml
-from openai_text import generate_ai_text
-from modeling import text_to_cad, check_model_generation_status
-from slice_print import slice_with_prusaslicer, send_gcode_to_printer, find_latest_stl  # Assuming you have a function for AI text generation
+import pylib.cad_prompts
+import pylib.speech_to_text
+from pylib.openai_text import generate_ai_text
+from pylib.modeling import text_to_cad, check_model_generation_status
+from pylib.slice_print import slice_with_prusaslicer, send_gcode_to_printer, find_latest_stl  # Assuming you have a function for AI text generation
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -20,18 +19,18 @@ def main():
         # Idea generation or input
         if USE_SPEECH and not USE_AI_FOR_IDEA:
             logging.info("Please speak your idea for a CAD object:")
-            idea = input("What is your idea?")
+            idea = input("Give me your idea, bitch: ")
+            # idea = pylib.speech_to_text.recognize_speech()
         elif USE_AI_FOR_IDEA:
             logging.info("Generating idea using AI...")
-
-            idea = generate_ai_text(cad_prompts.IDEA_GENERATION, 0.8)  # Adjust temperature as needed
+            idea = generate_ai_text(pylib.cad_prompts.IDEA_GENERATION, 0.8)  # Adjust temperature as needed
         else:
             idea = input("Please type your idea for a CAD object: ")
 
         logging.info(f"Idea received: {idea}")
 
         # Generate manufacturing instructions
-        instructions_prompt = cad_prompts.MANUFACTURING_INSTRUCTIONS.format(user_idea=idea)
+        instructions_prompt = pylib.cad_prompts.MANUFACTURING_INSTRUCTIONS.format(user_idea=idea)
         manufacturing_instructions = generate_ai_text(instructions_prompt, 0.8)
         logging.info(f"Manufacturing Instructions:\n{manufacturing_instructions}")
 
